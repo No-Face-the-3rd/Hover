@@ -30,9 +30,9 @@ public class Controller : MonoBehaviour {
         float angle = 180.0f - Mathf.Clamp(rb.velocity.x, -turnRate, turnRate) / turnRate * 90.0f;
         rb.rotation = Quaternion.Lerp(rb.rotation, Quaternion.Euler(new Vector3(rb.rotation.eulerAngles.x, angle, rb.rotation.eulerAngles.z)), 0.5f);
 
-        if (rb.velocity.x > maxSpeed)
+        if (Mathf.Abs(rb.velocity.x) > maxSpeed)
         {
-            rb.velocity = new Vector3(maxSpeed, rb.velocity.y, rb.velocity.z);
+            rb.velocity = new Vector3(rb.velocity.x / Mathf.Abs(rb.velocity.x) * maxSpeed, rb.velocity.y, rb.velocity.z);
         }
     }
 

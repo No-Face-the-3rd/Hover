@@ -83,7 +83,7 @@ public class Hover : MonoBehaviour {
         //hits = Physics.BoxCastAll(center, halfExt, dir, orientation, maxRange, -1, QueryTriggerInteraction.Ignore);
         foreach (RaycastHit hit in hits)
         {
-            Debug.DrawLine(hit.point + -dir * hit.distance, hit.point, Color.black, 0.1f, false);
+            Debug.DrawLine(center, hit.point, Color.black, 0.05f, false);
             if(hit.collider == toCheck && hit.distance > 0.0f)
             {
                 if (hit.distance < shortestDist)

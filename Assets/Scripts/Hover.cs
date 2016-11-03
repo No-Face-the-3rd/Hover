@@ -9,100 +9,155 @@ public class Hover : MonoBehaviour {
 
     private Rigidbody rb;
     private BoxCollider cl;
-	// Use this for initialization
-	void Start () {
+    private Collider pCl;
+
+    private RaycastHit[] hits;
+    private bool rayDown = false;
+
+    class rayControl
+    {
+        public Vector3 center;
+        public Vector3 halfExt;
+        public Vector3 dir;
+        public float maxRange;
+        public Quaternion orientation;
+        public int focus;
+
+        public rayControl()
+        {
+            center = Vector3.zero;
+            halfExt = Vector3.one;
+            dir = Vector3.forward;
+            maxRange = 1.0f;
+            orientation = Quaternion.identity;
+            focus = 5;
+        }
+
+        public rayControl(Vector3 pCenter, Vector3 pHalfExt, Vector3 pDir, float pMaxRange, Quaternion pOrientation, int pFocus = 5)
+        {
+            center = pCenter;
+            halfExt = pHalfExt;
+            dir = pDir;
+            maxRange = pMaxRange;
+            orientation = pOrientation;
+            focus = pFocus;
+        }
+    }
+
+    // Use this for initialization
+    void Start () {
 	    if(transform.parent != null)
         {
             rb = transform.parent.gameObject.GetComponent<Rigidbody>();
         }
         cl = GetComponent<BoxCollider>();
+        pCl = rb.gameObject.GetComponent<Collider>();
 	}
 	
 	// Update is called once per frame
-	void Update () {
-	
+	void FixedUpdate () {
+	    if(rayDown)
+        {
+            rayControl pos = getPosInfo();
+            hits = getHits(pos);
+
+            doForce(pos);
+        }
+
 	}
 
     void OnTriggerStay(Collider other)
     {
         if (rb != null)
         {
-            float range = cl.size.y * rb.transform.localScale.y;
-            Vector3 testPos = transform.parent.position + cl.center + new Vector3(0.0f, range * 0.5f, 0.0f);
-            Vector3 halfsies = new Vector3(transform.parent.localScale.x * cl.size.x / 2.0f, 0.0f, transform.parent.localScale.z * cl.size.z / 2.0f);
-            Vector3 closePos = other.ClosestPointOnBounds(testPos);
-            Quaternion orie = transform.parent.rotation;
-            closePos = getClosePos(testPos,halfsies,orie * Vector3.down, range, Quaternion.identity, other, 5);
-            float dist = (1.0f - (testPos.y - closePos.y) / (range));
-            dist *= (strength + rb.velocity.z);
-
-            if (rb.velocity.y < 0.0f)
-                dist *= 2.0f;
-            
-            rb.AddForceAtPosition((rb.rotation * Vector3.up) * dist, Vector3.Scale(testPos + new Vector3(closePos.x - testPos.x,0.0f,0.0f), new Vector3(1.0f,1.0f,0.0f)), ForceMode.Acceleration );
-
+            rayDown = true;
         }
     }
 
-    Vector3 getClosePos(Vector3 center, Vector3 halfExt, Vector3 dir, float maxRange, Quaternion orientation, Collider toCheck, int focus = 5)
+
+    void OnTriggerExit(Collider other)
     {
-        Vector3 ret = new Vector3();
+        if(rb != null)
+        {
+            rayDown = false;
+        }
+    }
 
-        float shortestDist = Mathf.Infinity;
-
+    RaycastHit[] getHits(Vector3 center, Vector3 halfExt, Vector3 dir, float maxRange, Quaternion orientation, int focus = 5)
+    {
         List<RaycastHit> hits = new List<RaycastHit>();
         int loop = ((focus % 2 == 0) ? focus / 2 : (focus - 1) / 2);
+
+        int mask = ~(1 << 2);
 
         for (int j = 0; j <= loop; j++)
         {
             for (int i = 0; i <= loop; i++)
             {
-                RaycastHit[] tmp = Physics.RaycastAll(center + new Vector3(halfExt.x, 0, 0) / loop * (-loop + i) + new Vector3(0, 0, halfExt.z) / loop * (-loop + j), dir, maxRange, -1, QueryTriggerInteraction.Ignore);
-                foreach (RaycastHit hit in tmp)
+                Vector3 offset = orientation * (new Vector3(halfExt.x, 0, 0) / loop * (-loop + i) + new Vector3(0, 0, halfExt.z) / loop * (-loop + j));
+                Debug.DrawLine(center + offset, center, Color.cyan, 0.02f, false);
+                RaycastHit tmp;
+                if(Physics.Raycast(center + offset, dir, out tmp, maxRange, mask, QueryTriggerInteraction.Ignore))
                 {
-                    hits.Add(hit);
+                    hits.Add(tmp);
                 }
-                RaycastHit[] tmp2 = Physics.RaycastAll(center - new Vector3(halfExt.x, 0, 0) / loop * (-loop + i) - new Vector3(0, 0, halfExt.z) / loop * (-loop + j), dir, maxRange, -1, QueryTriggerInteraction.Ignore);
-                foreach (RaycastHit hit in tmp2)
+
+                offset = orientation * (-new Vector3(halfExt.x, 0, 0) / loop * (-loop + i) - new Vector3(0, 0, halfExt.z) / loop * (-loop + j));
+                Debug.DrawLine(center + offset, center, Color.cyan, 0.02f, false);
+                if(Physics.Raycast(center + offset, dir, out tmp, maxRange, mask, QueryTriggerInteraction.Ignore))
                 {
-                    hits.Add(hit);
+                    hits.Add(tmp);
                 }
-                RaycastHit[] tmp3 = Physics.RaycastAll(center + new Vector3(halfExt.x, 0, 0) / loop * (-loop + i) - new Vector3(0, 0, halfExt.z) / loop * (-loop + j), dir, maxRange, -1, QueryTriggerInteraction.Ignore);
-                foreach (RaycastHit hit in tmp3)
+                offset = orientation * (new Vector3(halfExt.x, 0, 0) / loop * (-loop + i) - new Vector3(0, 0, halfExt.z) / loop * (-loop + j));
+                Debug.DrawLine(center + offset, center, Color.cyan, 0.02f, false);
+                if(Physics.Raycast(center + offset, dir, out tmp, maxRange, mask, QueryTriggerInteraction.Ignore))
                 {
-                    hits.Add(hit);
+                    hits.Add(tmp);
                 }
-                RaycastHit[] tmp4 = Physics.RaycastAll(center - new Vector3(halfExt.x, 0, 0) / loop * (-loop + i) + new Vector3(0, 0, halfExt.z) / loop * (-loop + j), dir, maxRange, -1, QueryTriggerInteraction.Ignore);
-                foreach (RaycastHit hit in tmp4)
+                offset = orientation * (-new Vector3(halfExt.x, 0, 0) / loop * (-loop + i) + new Vector3(0, 0, halfExt.z) / loop * (-loop + j));
+                Debug.DrawLine(center + offset, center, Color.cyan, 0.02f, false);
+                if(Physics.Raycast(center + offset, dir, out tmp, maxRange, mask, QueryTriggerInteraction.Ignore))
                 {
-                    hits.Add(hit);
+                    hits.Add(tmp);
                 }
             }
         }
 
-        //hits = Physics.BoxCastAll(center, halfExt, dir, orientation, maxRange, -1, QueryTriggerInteraction.Ignore);
+        return hits.ToArray();
+    }
+
+    RaycastHit[] getHits(rayControl control)
+    {
+        RaycastHit[] hits = getHits(control.center, control.halfExt, control.dir, control.maxRange, control.orientation, control.focus);
+        return hits;
+    }
+
+    rayControl getPosInfo()
+    {
+        float range = cl.size.y * rb.transform.localScale.y;
+        Quaternion orie = rb.rotation;
+        Vector3 testPos = rb.position + orie * (cl.center + new Vector3(0.0f, range * 0.5f, 0.0f));
+        Vector3 halfsies = new Vector3(transform.parent.localScale.x * cl.size.x / 2.0f, 0.0f, transform.parent.localScale.z * cl.size.z / 2.0f);
+        rayControl ret = new rayControl(testPos, halfsies, Vector3.down, range, orie, 5);
+        return ret;
+    }
+
+    void doForce(rayControl control)
+    {
         foreach (RaycastHit hit in hits)
         {
-            Debug.DrawLine(center, hit.point, Color.black, 0.05f, false);
-            if(hit.collider == toCheck && hit.distance > 0.0f)
-            {
-                if (hit.distance < shortestDist)
-                {
-                    ret = hit.point;
-                    shortestDist = hit.distance;
+            float dist = (1.0f - (hit.distance) / (control.maxRange));
+            dist *= (strength + Mathf.Abs(rb.velocity.x) / (float.MaxValue / 100.0f));
 
-                }
-                else if (Vector3.Distance(hit.point, center) < Vector3.Distance(ret, center))
-                {
+            if (rb.velocity.y < 0.0f)
+                dist *= 2.0f;
 
-                    ret = hit.point;
-                    shortestDist = hit.distance;
-                    Debug.Log(shortestDist);
-                }
-            }
+            Vector3 forcePos = hit.point + Vector3.up * hit.distance;
+            Debug.DrawLine(hit.point + Vector3.up * hit.distance, hit.point, Color.black, 0.02f, false);
+
+            rb.AddForceAtPosition((rb.rotation * Vector3.up) * dist, forcePos, ForceMode.Acceleration);
+            Debug.DrawLine(forcePos, forcePos + (rb.rotation * Vector3.up) * dist, Color.green, 0.02f, false);
         }
-
-        return ret;
     }
 
 }

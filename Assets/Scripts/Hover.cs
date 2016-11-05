@@ -60,7 +60,6 @@ public class Hover : MonoBehaviour {
         {
             rayControl pos = getPosInfo();
             hits = getHits(pos);
-
             doForce(pos);
         }
 
@@ -88,7 +87,7 @@ public class Hover : MonoBehaviour {
         List<RaycastHit> hits = new List<RaycastHit>();
         int loop = ((focus % 2 == 0) ? focus / 2 : (focus - 1) / 2);
 
-        int mask = ~(1 << 2);
+        int mask = ~(1 << 2 | 1 << 8);
 
         for (int j = 0; j <= loop; j++)
         {
@@ -149,6 +148,8 @@ public class Hover : MonoBehaviour {
             float dist = (1.0f - (hit.distance) / (control.maxRange));
             dist *= (strength + Mathf.Abs(rb.velocity.x) / (float.MaxValue / 100.0f));
 
+            Rigidbody other = hit.collider.GetComponent<Rigidbody>();
+
             if (rb.velocity.y < 0.0f)
                 dist *= 2.0f;
 
@@ -156,6 +157,11 @@ public class Hover : MonoBehaviour {
             Debug.DrawLine(hit.point + Vector3.up * hit.distance, hit.point, Color.black, 0.02f, false);
 
             rb.AddForceAtPosition((rb.rotation * Vector3.up) * dist, forcePos, ForceMode.Acceleration);
+
+            if(other != null)
+            {
+                other.AddForceAtPosition(Vector3.down * dist, hit.point, ForceMode.Acceleration);
+            }
             Debug.DrawLine(forcePos, forcePos + (rb.rotation * Vector3.up) * dist, Color.green, 0.02f, false);
         }
     }

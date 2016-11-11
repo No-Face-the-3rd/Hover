@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public class Hover : MonoBehaviour {
 
     public float strength = 0.0f;
+    public float maxAng = 1.0f;
 
 
     private Rigidbody rb;
@@ -49,6 +50,7 @@ public class Hover : MonoBehaviour {
 	    if(transform.parent != null)
         {
             rb = transform.parent.gameObject.GetComponent<Rigidbody>();
+            rb.maxAngularVelocity = maxAng;
         }
         cl = GetComponent<BoxCollider>();
         pCl = rb.gameObject.GetComponent<Collider>();

@@ -59,46 +59,21 @@ public class ComponentFunc
 public class SliderController : MonoBehaviour {
 
     public Slider slider;
-    public GameObject targ;
-
-    public ComponentFuncs functions;
-
-    [HideInInspector]
-    public string type;
-    [HideInInspector]
-    public int typeInd;
-
-    [HideInInspector]
-    public string curChoice;
-    [HideInInspector]
-    public int curInd;
+    public ComponentFunc percentFunction;
 
 
-    [HideInInspector]
-    public string maxChoice;
-    [HideInInspector]
-    public int maxInd;
 
 
     // Use this for initialization
     void Start () {
-
+        slider.maxValue = 1.0f;
 	}
 
     // Update is called once per frame
     void Update()
     {
-        //var tmp = targ.GetComponent(type);
 
-        //MethodInfo method = Type.GetType(type).GetMethod(curChoice);
-        //object outCur = method.Invoke(tmp, null);
-
-        //slider.value = (float)outCur;
-        //method = Type.GetType(type).GetMethod(maxChoice);
-        //outCur = method.Invoke(tmp, null);
-        //slider.maxValue = (float)outCur;
-        slider.value = (float)functions.callFunc(0);
-        slider.maxValue = (float)functions.callFunc(1);
+        slider.value = (float)percentFunction.callFunc();
 
     }
 

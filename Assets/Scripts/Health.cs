@@ -2,8 +2,9 @@
 using System.Collections;
 
 public class Health : MonoBehaviour {
-    public float maxHealth;
-    public float curHealth;
+    [SerializeField]
+    private float maxHealth;
+    private float curHealth;
 
 
 	// Use this for initialization

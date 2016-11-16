@@ -35,7 +35,11 @@ public class ComponentFuncEditor : PropertyDrawer
         function = property.FindPropertyRelative("choice").stringValue;
         foldout = property.FindPropertyRelative("foldout").boolValue;
 
-        EditorGUILayout.PropertyField(property.FindPropertyRelative("label"));
+        if (!foldout)
+        {
+
+            EditorGUILayout.PropertyField(property.FindPropertyRelative("label"));
+        }
         nameLabel = property.FindPropertyRelative("label").stringValue;
         nameLabel = String.Equals(nameLabel, "") ? "Field Label" : nameLabel;
         property.FindPropertyRelative("label").stringValue = nameLabel;

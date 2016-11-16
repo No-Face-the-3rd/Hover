@@ -7,7 +7,29 @@ using System.Reflection;
 using UnityEngine.UI;
 
 
+[CustomEditor(typeof(ScoreTextManager))]
+[CanEditMultipleObjects]
+public class ScoreTextEditor : Editor
+{
+
+}
+
+[CustomEditor(typeof(RespawnManager))]
+[CanEditMultipleObjects]
+public class RespawnManagerEditor : Editor
+{
+
+}
+
+[CustomEditor(typeof(LivesTextManager))]
+[CanEditMultipleObjects]
+public class LivesEditor : Editor
+{
+
+}
+
 [CustomEditor(typeof(SliderController))]
+[CanEditMultipleObjects]
 public class SliderEditor : Editor
 {
     //string[] funcChoices = new[] { "", "meow" };

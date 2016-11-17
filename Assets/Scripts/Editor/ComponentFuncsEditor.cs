@@ -7,6 +7,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
+[CustomEditor(typeof(MonoBehaviour), true)]
+[CanEditMultipleObjects]
+public class MonoBehaviourEditor : Editor
+{
+}
+
 [CustomPropertyDrawer(typeof(ComponentFunc))]
 public class ComponentFuncEditor : PropertyDrawer
 {
@@ -54,7 +60,7 @@ public class ComponentFuncEditor : PropertyDrawer
         //choose gameobject
         if (foldout)
         {
-
+            EditorGUI.indentLevel++;
             targ = (GameObject)EditorGUILayout.ObjectField(nameLabel + " Target ", targ, typeof(GameObject), true);
 
             if (targ != null)
@@ -67,11 +73,12 @@ public class ComponentFuncEditor : PropertyDrawer
                     choiceQualified.Add(comp.GetType().AssemblyQualifiedName);
                 }
                 compChoices = choiceList.ToArray();
+                int check = compChoiceInd;
                 compChoiceInd = EditorGUILayout.Popup(nameLabel + " Component", compChoiceInd, compChoices);
                 component = compChoiceInd >= 0 ? compChoices[compChoiceInd] : component;
                 compChoices = choiceQualified.ToArray();
                 string compQual = compChoiceInd >= 0 ? compChoices[compChoiceInd] : component;
-                if (compChoiceInd >= 0)
+                if (compChoiceInd >= 0 && compChoiceInd == check)
                 {
                     MethodInfo[] methods = Type.GetType(choiceQualified.ToArray()[compChoiceInd]).GetMethods();
 
@@ -88,6 +95,7 @@ public class ComponentFuncEditor : PropertyDrawer
                             choiceQualified.Add(method.ReturnType.AssemblyQualifiedName);
                         }
                     }
+                    check = returnTypeMask;
                     returnTypeChoices = choiceList.ToArray();
                     returnTypeMask = EditorGUILayout.MaskField(nameLabel + " Return Type", returnTypeMask, returnTypeChoices);
                     string[] typeQual = choiceQualified.ToArray();
@@ -99,7 +107,6 @@ public class ComponentFuncEditor : PropertyDrawer
                     {
                         returnTypeMask = (1 << returnTypeChoices.Length) - 1;
                     }
-
                     for (int j = 0; j < methods.Length; j++)
                     {
                         MethodInfo method = methods[j];
@@ -119,13 +126,27 @@ public class ComponentFuncEditor : PropertyDrawer
                             }
                         }
                     }
-                    funcChoices = choiceList.ToArray();
-                    funcChoiceInd = EditorGUILayout.Popup(nameLabel + " Function", funcChoiceInd, funcChoices);
+                    if (returnTypeMask == check && returnTypeMask > 0)
+                    {
 
-                    function = funcChoiceInd >= 0 ? funcChoices[funcChoiceInd] : function;
+                        funcChoices = choiceList.ToArray();
+                        funcChoiceInd = EditorGUILayout.Popup(nameLabel + " Function", funcChoiceInd, funcChoices);
 
-                    returnType = (funcChoiceInd >= 0 && compChoiceInd >= 0) ? Type.GetType(compQual).GetMethod(function).ReturnType.AssemblyQualifiedName : "";
+                        function = funcChoiceInd >= 0 ? funcChoices[funcChoiceInd] : function;
 
+                        returnType = (funcChoiceInd >= 0 && compChoiceInd >= 0) ? Type.GetType(compQual).GetMethod(function).ReturnType.AssemblyQualifiedName : "";
+                    }
+                    else
+                    {
+                        funcChoiceInd = -1;
+                        function = "";
+                    }
+
+                }
+                else if(compChoiceInd != check)
+                {
+                    returnTypeMask = 0;
+                    funcChoiceInd = -1;
                 }
 
             }

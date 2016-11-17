@@ -34,7 +34,6 @@ public class CameraController : MonoBehaviour {
             centerCam();
         }
 
-        Debug.Log(fol);
     }
 
     private void retainTarget()

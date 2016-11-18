@@ -11,7 +11,8 @@ public class RespawnManager : MonoBehaviour {
 
     public ComponentFunc camFunction;
     public ComponentFunc loseFunc;
-	
+
+    private bool callLose = true;
     // Use this for initialization
 	void Start () {
         healthComp = GetComponent<Health>();
@@ -38,9 +39,10 @@ public class RespawnManager : MonoBehaviour {
         }
         else
         {
-            if (healthComp.getCurHealth() <= 0.0f || energyComp.getCurEnergy() <= 0.0f)
+            if ((healthComp.getCurHealth() <= 0.0f || energyComp.getCurEnergy() <= 0.0f) && callLose)
             {
                 loseFunc.callFunc();
+                callLose = false;
             }
         }
 

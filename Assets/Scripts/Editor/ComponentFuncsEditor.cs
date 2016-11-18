@@ -89,6 +89,9 @@ public class ComponentFuncEditor : PropertyDrawer
                     {
                         ParameterInfo[] p = method.GetParameters();
                         string retType = method.ReturnType.ToString();
+                        int retPer = retType.IndexOf('.');
+                        if (retPer >= 0)
+                            retType = retType.Substring(retPer + 1);
                         if (p.Length == 0 && !choiceList.Exists(element => String.Equals(element, retType)) && !String.Equals(retType, "T") && !String.Equals(retType, "T[]"))
                         {
                             choiceList.Add(retType);
@@ -111,7 +114,7 @@ public class ComponentFuncEditor : PropertyDrawer
                     {
                         MethodInfo method = methods[j];
                         ParameterInfo[] p = method.GetParameters();
-                        if (p.Length == 0 && returnTypeMask > 0 && (method.IsPublic || method.IsFamily))
+                        if (p.Length == 0 && returnTypeMask > 0 && (method.IsPublic))
                         {
                             for (int i = 0; i < returnTypeChoices.Length; i++)
                             {
@@ -159,6 +162,7 @@ public class ComponentFuncEditor : PropertyDrawer
                 component = "";
                 function = "";
             }
+            EditorGUI.indentLevel--;
         }
 
         //store changed values

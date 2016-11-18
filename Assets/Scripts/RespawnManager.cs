@@ -10,6 +10,8 @@ public class RespawnManager : MonoBehaviour {
     private Energy energyComp;
 
     public ComponentFunc camFunction;
+    public ComponentFunc getScoreFunc;
+    public ComponentFunc loseFunc;
 	
     // Use this for initialization
 	void Start () {
@@ -32,6 +34,14 @@ public class RespawnManager : MonoBehaviour {
             if (current <= 0.0f)
             {
                 doRespawn();
+            }
+        }
+        else
+        {
+            if (healthComp.getCurHealth() <= 0.0f || energyComp.getCurEnergy() <= 0.0f)
+            {
+                HighScoreManager.manager.checkScore(GameManager.manager.getPlayerName(), (float)getScoreFunc.callFunc());
+                loseFunc.callFunc();
             }
         }
 

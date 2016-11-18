@@ -16,6 +16,8 @@ public class Health : MonoBehaviour {
 	void Update () {
         if (curHealth < 0.0f)
             curHealth = 0.0f;
+        if (curHealth > maxHealth)
+            curHealth = maxHealth;
 	}
 
     public float getMaxHealth()

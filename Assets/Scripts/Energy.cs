@@ -18,6 +18,8 @@ public class Energy : MonoBehaviour {
         curEnergy -= drainRate * Time.deltaTime;
         if (curEnergy < 0.0f)
             curEnergy = 0.0f;
+        if (curEnergy > maxEnergy)
+            curEnergy = maxEnergy;
 	}
 
     public float getMaxEnergy()

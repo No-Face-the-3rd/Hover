@@ -10,7 +10,6 @@ public class RespawnManager : MonoBehaviour {
     private Energy energyComp;
 
     public ComponentFunc camFunction;
-    public ComponentFunc getScoreFunc;
     public ComponentFunc loseFunc;
 	
     // Use this for initialization
@@ -22,6 +21,7 @@ public class RespawnManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+        lives = GameManager.manager.getLives();
         if (lives > 0)
         {
 
@@ -40,7 +40,6 @@ public class RespawnManager : MonoBehaviour {
         {
             if (healthComp.getCurHealth() <= 0.0f || energyComp.getCurEnergy() <= 0.0f)
             {
-                HighScoreManager.manager.checkScore(GameManager.manager.getPlayerName(), (float)getScoreFunc.callFunc());
                 loseFunc.callFunc();
             }
         }
@@ -54,7 +53,7 @@ public class RespawnManager : MonoBehaviour {
         energyComp.setCurEnergy(energyComp.getMaxEnergy());
         this.transform.position = respawnLoc;
         this.GetComponent<Rigidbody>().velocity = Vector3.zero;
-        lives--;
+        GameManager.manager.addLives(-1);
     }
 
 

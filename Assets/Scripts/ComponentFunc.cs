@@ -47,8 +47,6 @@ public class ComponentFunc
         return outCur;
     }
 
-
-
     public Type getType()
     {
         return Type.GetType(returnType);

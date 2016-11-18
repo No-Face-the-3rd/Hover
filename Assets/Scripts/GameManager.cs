@@ -6,6 +6,7 @@ public class GameManager : MonoBehaviour {
     public static GameManager manager;
 
     private string playerName = "";
+    private int lives = 5;
 
 	// Use this for initialization
 	void Start () {
@@ -41,5 +42,19 @@ public class GameManager : MonoBehaviour {
     {
         SceneManager.LoadScene(scene);
         Time.timeScale = 1;
+    }
+
+    public int getLives()
+    {
+        return lives;
+    }
+
+    public void addLives(int value)
+    {
+        lives += value;
+    }
+    public void setLives(int value)
+    {
+        lives = value;
     }
 }

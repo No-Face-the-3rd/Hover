@@ -54,6 +54,7 @@ public class MenuManager : MonoBehaviour {
     {
         InputField field = startCanvas.GetComponentInChildren<InputField>();
         GameManager.manager.setPlayerName(field.text);
+        GameManager.manager.setLives(5);
         GameManager.manager.loadScene("Main");
     }
 }

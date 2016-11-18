@@ -8,6 +8,11 @@ public class Controller : MonoBehaviour {
     public float horizDrag;
     public float armDistance;
 
+    public GameObject primary;
+    public float primaryCost;
+
+    public ComponentFunc getEnergy;
+
     private float horizInput = 0.0f, vertInput = 0.0f;
     private Rigidbody rb;
     private BoxCollider child;
@@ -16,6 +21,7 @@ public class Controller : MonoBehaviour {
     private Camera mainCam;
 
     private Rigidbody armRb;
+    private Vector3 armDir;
 
 	// Use this for initialization
 	void Start () {
@@ -31,6 +37,10 @@ public class Controller : MonoBehaviour {
 	void Update () {
         horizInput = Input.GetAxisRaw("Horizontal");
         vertInput = Input.GetAxisRaw("Vertical");
+        if(Input.GetMouseButtonDown(0))
+        {
+            firePrim();
+        }
 	}
 
     void FixedUpdate()
@@ -82,8 +92,27 @@ public class Controller : MonoBehaviour {
 
             Vector3 mouse = mainCam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, transform.position.z - mainCam.transform.position.z));
             Vector3 forceDir = (mouse - transform.position).normalized;
-
+            armDir = forceDir;
             armRb.MovePosition(rb.position + forceDir * armDistance);
+        }
+    }
+
+    void firePrim()
+    {
+        if((float)getEnergy.callFunc() > primaryCost)
+        {
+            GameObject bullet = (GameObject)GameObject.Instantiate(primary, armRb.position, Quaternion.LookRotation(armDir));
+            GetComponent<Energy>().addEnergy(-primaryCost);
+        }
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if(collision.gameObject.tag == "Harmful")
+        {
+            float damage = collision.gameObject.GetComponent<DamageValue>().getDamage();
+            Health healthComp = GetComponent<Health>();
+            healthComp.addHealth(-damage);
         }
     }
 }

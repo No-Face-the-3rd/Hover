@@ -10,7 +10,6 @@ public class Hover : MonoBehaviour {
 
     private Rigidbody rb;
     private BoxCollider cl;
-    private Collider pCl;
 
     private RaycastHit[] hits;
     private bool rayDown = false;
@@ -53,7 +52,6 @@ public class Hover : MonoBehaviour {
             rb.maxAngularVelocity = maxAng;
         }
         cl = GetComponent<BoxCollider>();
-        pCl = rb.gameObject.GetComponent<Collider>();
 	}
 	
 	// Update is called once per frame

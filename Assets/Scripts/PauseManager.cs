@@ -9,6 +9,8 @@ public class PauseManager : MonoBehaviour
     public GameObject pauseCanvas;
     public GameObject loseCanvas;
 
+    public ComponentFunc getScoreFunc;
+
     // Use this for initialization
     void Start()
     {
@@ -26,8 +28,12 @@ public class PauseManager : MonoBehaviour
 
     public void enterLose()
     {
+        Text loseText = loseCanvas.transform.FindChild("LoseText").GetComponent<Text>();
         Time.timeScale = 0;
         loseCanvas.SetActive(true);
+        float score = (float)getScoreFunc.callFunc();
+        HighScoreManager.manager.checkScore(GameManager.manager.getPlayerName(), score);
+        loseText.text += "\nScore: " + score;
     }
 
     public void togglePause()

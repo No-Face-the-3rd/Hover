@@ -1,0 +1,4 @@
+I had succeeded in implementing most features within the estimated amount of time, but due to getting sidetracked by the development of a unity editor tool the timeline got incredibly off track.
+
+The hover behaviour stabilization went through several iterations before displaying the intended behaviour.
+Originally, I had intended to implement a grappling hook, but due to noticing the time necessary and the lack of time already from the distraction that idea was scrapped and instead a destructible and self repairing bridge was pushed to more primary implementation.

@@ -164,6 +164,7 @@ public class Hover : MonoBehaviour {
             }
             Debug.DrawLine(forcePos, forcePos + (rb.rotation * Vector3.up) * dist, Color.green, 0.02f, false);
         }
+        hits = new RaycastHit[0];
     }
 
 }
